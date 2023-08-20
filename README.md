@@ -5,13 +5,13 @@ Inlet aims to be a framework-agnostic, procedural CLI web app bootstrapper for R
 Inlet works by using the power of AST traversal to be able to generate your code. 
 
 ## Roadmap
-[X] Full CRUD route support
-[X] Database-backed session route support
-[ ] Implement auth middleware route
-[ ] Bring the Inlet experience to Actix-web
-[ ] Implement Oauth 
-[ ] Implement payment routes
-[ ] Support for generating SQL files at bootstrap-time
+- [x] Full CRUD route support
+- [x] Database-backed session route support
+- [ ] Implement auth middleware route
+- [ ] Bring the Inlet experience to Actix-web
+- [ ] Implement Oauth 
+- [ ] Implement payment routes
+- [ ] Support for generating SQL files at bootstrap-time
 
 ## Dependencies
 chrono: Date-time stuff (get timestamp)
