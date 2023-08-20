@@ -1,13 +1,13 @@
 [package]
-name = "hell"
+name = "inlet"
 version = "0.0.1"
 edition = "2021"
 authors = ["Joshua Mo <joshua.mo.876@gmail.com>"]
 rust-version = "1.70"
 description = "A powerful procedural Rust web service CLI bootstrapper."
 readme = "README.md"
-homepage = ""
-repository = ""
+homepage = "https://github.com/joshua-mo-143/inlet"
+repository = "https://github.com/joshua-mo-143/inlet"
 license = "LICENSE"
 keywords = ["cli", "terminal", "bootstrapper", "web", "productivity"]
 categories = ["command-line-utilities"]
