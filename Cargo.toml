@@ -1,0 +1,24 @@
+[package]
+name = "hell"
+version = "0.0.1"
+edition = "2021"
+authors = ["Joshua Mo <joshua.mo.876@gmail.com>"]
+rust-version = "1.70"
+description = "A powerful procedural Rust web service CLI bootstrapper."
+readme = "README.md"
+homepage = ""
+repository = ""
+license = "LICENSE"
+keywords = ["cli", "terminal", "bootstrapper", "web", "productivity"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+chrono = { version = "0.4.26", features = ["clock"] }
+clap = { version = "4.3.23", features = ["derive"] }
+indoc = "2.0.3"
+inquire = "0.6.2"
+prettyplease = "0.2.12"
+proc-macro2 = "1.0.66"
+quote = "1.0.33"
+syn = { version = "2.0.29", features = ["full"] }
+toml_edit = "0.19.14"
