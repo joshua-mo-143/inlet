@@ -12,6 +12,11 @@ license = "LICENSE"
 keywords = ["cli", "terminal", "bootstrapper", "web", "productivity"]
 categories = ["command-line-utilities"]
 
+[[bin]]
+name = "inlet"
+path = "src/main.rs"
+edition = "2021"
+
 [dependencies]
 chrono = { version = "0.4.26", features = ["clock"] }
 clap = { version = "4.3.23", features = ["derive"] }
