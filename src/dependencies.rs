@@ -30,12 +30,24 @@ pub fn add_required_dependencies(project_path: PathBuf, cfg: Config) -> Result<(
     }
 
     if cfg.auth {
-        toml.add_dependency_with_features("axum-extra", "0.7.7", make_features(vec!["cookie-private"]));
-        toml.add_dependency_with_features( "chrono", "0.4.26", make_features(vec!["clock", "serde"]));
+        toml.add_dependency_with_features(
+            "axum-extra",
+            "0.7.7",
+            make_features(vec!["cookie-private"]),
+        );
+        toml.add_dependency_with_features(
+            "chrono",
+            "0.4.26",
+            make_features(vec!["clock", "serde"]),
+        );
         toml.add_dependency_with_features("serde", "1.0.171", make_features(vec!["derive"]));
         toml.add_dependency("time", "0.3.26");
         toml.add_dependency("bcrypt", "0.15.0");
-        toml.add_dependency_with_features("shuttle-shared-db", SHUTTLE_VERSION, make_features(vec!["postgres"]));
+        toml.add_dependency_with_features(
+            "shuttle-shared-db",
+            SHUTTLE_VERSION,
+            make_features(vec!["postgres"]),
+        );
     }
 
     if cfg.secrets {

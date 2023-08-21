@@ -1,7 +1,7 @@
-use proc_macro2::TokenStream;
 use crate::codegen::main_fn::axum_endpoint;
-use syn::File;
+use proc_macro2::TokenStream;
 use quote::quote;
+use syn::File;
 
 fn register_route() -> TokenStream {
     let endpoint = axum_endpoint();
@@ -48,20 +48,20 @@ fn login_route() -> TokenStream {
                 .fetch_one(&state.db)
                 .await {
                 Ok(res) => res,
-                Err(e) => return Err(StatusCode::BAD_REQUEST)
+                Err(_) => return Err((StatusCode::BAD_REQUEST, "Incorrect credentials".to_string()))
             };
 
             match verify(user.password, &res.password) {
                 Ok(true) => {},
-                Ok(false) => {return Err(StatusCode::BAD_REQUEST)},
-                Err(_) => {return Err(StatusCode::INTERNAL_SERVER_ERROR)}
+                Ok(false) => {return Err((StatusCode::BAD_REQUEST, "Incorrect credentials".to_string()))},
+                Err(e) => {return Err((StatusCode::INTERNAL_SERVER_ERROR, format!("Something went wrong trying to verify your password: {e}")))}
             }
 
             let session_id = "hello world!";
 
             let expires_at = Utc::now().naive_local() + ChronoDuration::seconds(3600);
 
-            if let Err(_) = sqlx::query("INSERT INTO UserSessions
+            if let Err(e) = sqlx::query("INSERT INTO UserSessions
                 (user_id, session_id, expires_at)
                 VALUES
                 ((SELECT ID FROM users WHERE username = $1)
@@ -75,9 +75,10 @@ fn login_route() -> TokenStream {
                 .bind(expires_at)
                 .execute(&state.db)
                 .await {
-                return Err(
+                return Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                );
+                    format!("Something went wrong trying to give you a session: {e}")
+                ));
             }
 
             let cookie = Cookie::build("foo", session_id)
@@ -99,27 +100,64 @@ pub fn auth_routes() -> File {
     let register = register_route();
     let login = login_route();
 
-    let quote = quote! {
+    let code = quote! {
 
-        use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
-use axum_extra::extract::cookie::{Cookie, PrivateCookieJar};
-use bcrypt::{verify, hash};
-use serde::Deserialize;
-use chrono::{Duration as ChronoDuration, Utc};
-use time::Duration as TimeDuration;
-use crate::AppState;
+            use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
+    use axum_extra::extract::cookie::{Cookie, PrivateCookieJar};
+    use bcrypt::{verify, hash};
+    use serde::Deserialize;
+    use chrono::{Duration as ChronoDuration, Utc};
+    use time::Duration as TimeDuration;
+    use crate::AppState;
 
-        #[derive(Deserialize, sqlx::FromRow)]
-        pub struct LoginDetails {
-            pub username: String,
-            pub password: String
-        }
+            #[derive(Deserialize, sqlx::FromRow)]
+            pub struct LoginDetails {
+                pub username: String,
+                pub password: String
+            }
 
-        #register
+            #register
 
-        #login
-    };
+            #login
+        };
 
-    syn::parse_file(&quote.to_string()).unwrap()
+    syn::parse_file(&code.to_string()).unwrap()
 }
 
+pub fn auth_middleware() -> File {
+    let code = quote! {
+        use serde::{Deserialize, Serialize};
+        use crate::AppState;
+        use axum_extra::extract::cookie::PrivateCookieJar;
+        use axum::{http::{Request, StatusCode}, middleware::Next, response::IntoResponse, extract::State};
+
+        #[derive(Clone, Deserialize, Serialize, sqlx::FromRow)]
+        pub struct UserInfo {
+            user_id: i32,
+        }
+
+        pub async fn check_authed_cookies<B>(
+            State(state): State<AppState>,
+            jar: PrivateCookieJar,
+            mut req: Request<B>,
+            next: Next<B>,
+        ) -> Result<impl IntoResponse, impl IntoResponse> {
+            let Some(cookie) = jar.get("session").map(|cookie| cookie.value().to_owned()) else {
+                return Err((StatusCode::FORBIDDEN, "Forbidden!".to_string()))
+            };
+
+            let user_info = match sqlx::query_as::<_, UserInfo>("SELECT user_id FROM usersessions WHERE session_id = $1")
+                .bind(cookie)
+                .fetch_one(&state.db)
+                .await {
+                Ok(res) => res,
+                Err(_) => {return Err((StatusCode::FORBIDDEN, "Forbidden!".to_string()))}
+            };
+
+            req.extensions_mut().insert(user_info);
+            Ok(next.run(req).await)
+        }
+    };
+
+    syn::parse_file(&code.to_string()).unwrap()
+}

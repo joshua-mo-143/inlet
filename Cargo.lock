@@ -244,21 +244,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
 
 [[package]]
-name = "hell"
-version = "0.0.1"
-dependencies = [
- "chrono",
- "clap",
- "indoc",
- "inquire",
- "prettyplease",
- "proc-macro2",
- "quote",
- "syn",
- "toml_edit",
-]
-
-[[package]]
 name = "hermit-abi"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -302,6 +287,21 @@ name = "indoc"
 version = "2.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c785eefb63ebd0e33416dfcb8d6da0bf27ce752843a45632a67bf10d4d4b5c4"
+
+[[package]]
+name = "inlet"
+version = "0.0.1"
+dependencies = [
+ "chrono",
+ "clap",
+ "indoc",
+ "inquire",
+ "prettyplease",
+ "proc-macro2",
+ "quote",
+ "syn",
+ "toml_edit",
+]
 
 [[package]]
 name = "inquire"

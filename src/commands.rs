@@ -1,10 +1,10 @@
 use prettyplease::unparse;
 use proc_macro2::{Ident, Span};
 use quote::quote;
-use syn::File;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
+use syn::File;
 
 pub fn cargo_init(project_name: &str) -> PathBuf {
     Command::new("cargo")
@@ -17,7 +17,7 @@ pub fn cargo_init(project_name: &str) -> PathBuf {
 
 pub fn make_dir(project_path: PathBuf, foldername: &str) -> PathBuf {
     let folderdir = project_path.join(format!("src/{foldername}"));
-    
+
     fs::create_dir(folderdir.clone()).unwrap();
 
     fs::canonicalize(folderdir).unwrap()
@@ -37,7 +37,11 @@ pub fn write_secrets_file(project_dir: PathBuf) {
     fs::write(project_dir.join("Secrets.toml"), fmt).unwrap();
 }
 
-pub fn write_main_file(code: File, mut dynamic_deps: String, file_loc: PathBuf) -> Result<(), String> {
+pub fn write_main_file(
+    code: File,
+    mut dynamic_deps: String,
+    file_loc: PathBuf,
+) -> Result<(), String> {
     let fmt = unparse(&code);
 
     dynamic_deps.push_str(&fmt);

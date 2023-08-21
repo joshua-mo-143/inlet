@@ -17,7 +17,7 @@ Inlet currently supports the following flags:
 --crud: Creates API routes for each name inputted (takes a string or string array)
 --auth: Creates database-backed cookie session auth routes
 --secrets: Adds a Secrets.toml file
---name: The name of your 
+--name: The name of your project.
 ```
 Once you execute the command, the sorcery will commence!
 
