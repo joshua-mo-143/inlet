@@ -16,12 +16,11 @@ pub struct QueryGen {
 
 impl QueryGen {
     fn get_all(tablename: &str) -> Self {
+        let mut v: Vec<char> = tablename.chars().collect();
+        v[0] = v[0].to_uppercase().next().unwrap();
+        let tablename_titlecase: String = v.into_iter().collect();
 
-    let mut v: Vec<char> = tablename.chars().collect();
-    v[0] = v[0].to_uppercase().next().unwrap();
-    let tablename_titlecase: String = v.into_iter().collect();
-
-    let structname = Ident::new(&tablename_titlecase, Span::call_site());
+        let structname = Ident::new(&tablename_titlecase, Span::call_site());
         Self {
             query_fn_name: Ident::new(&format!("get_all_{tablename}"), Span::call_site()),
             query: format!("SELECT * FROM {tablename}"),
@@ -32,19 +31,19 @@ impl QueryGen {
             response: quote! {Ok((StatusCode::OK, Json(res)))},
             declaration: quote! {let res = match },
             error_handling: quote! {Ok(res) => res,
-        Err(e) => return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                e.to_string()
-            ))}
-    }
+            Err(e) => return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    e.to_string()
+                ))},
         }
+    }
 
     fn get_one(tablename: &str) -> Self {
-    let mut v: Vec<char> = tablename.chars().collect();
-    v[0] = v[0].to_uppercase().next().unwrap();
-    let tablename_titlecase: String = v.into_iter().collect();
+        let mut v: Vec<char> = tablename.chars().collect();
+        v[0] = v[0].to_uppercase().next().unwrap();
+        let tablename_titlecase: String = v.into_iter().collect();
 
-    let structname = Ident::new(&tablename_titlecase, Span::call_site());
+        let structname = Ident::new(&tablename_titlecase, Span::call_site());
         Self {
             query_fn_name: Ident::new(&format!("get_{tablename}_by_id"), Span::call_site()),
             query: format!("SELECT * FROM {tablename} WHERE id = $1"),
@@ -55,10 +54,10 @@ impl QueryGen {
             response: quote! {Ok((StatusCode::OK, Json(res)))},
             declaration: quote! {let res = match },
             error_handling: quote! {Ok(res) => res,
-        Err(e) => return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                e.to_string()
-            ))}
+            Err(e) => return Err((
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    e.to_string()
+                ))},
         }
     }
 
@@ -75,7 +74,7 @@ impl QueryGen {
             error_handling: quote! {return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 e.to_string()
-            ))}
+            ))},
         }
     }
 
@@ -92,7 +91,7 @@ impl QueryGen {
             error_handling: quote! {return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 e.to_string()
-            ))}
+            ))},
         }
     }
 
@@ -109,7 +108,7 @@ impl QueryGen {
             error_handling: quote! {return Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 e.to_string()
-            ))}
+            ))},
         }
     }
 
@@ -122,5 +121,4 @@ impl QueryGen {
             QueryGen::delete(tablename),
         ]
     }
-
 }

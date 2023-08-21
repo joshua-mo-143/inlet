@@ -1,5 +1,11 @@
+up:
+	cargo run -- create --crud meme --auth --secrets --name y
+
+down:
+	rm -rf y 
+
 test:
-	cargo run -- y create --crud meme --auth --secrets && cd y && cargo clippy
+	make up && cd y && cargo clippy
 
 retest:
-	rm -rf y && make test
+	make down && make test
